@@ -1,12 +1,12 @@
 /**
- * 
- * 
+ * Project : TocHw3
+ * Author : §d­õºõ
  * 
  * 
 */
 import org.json.*;
 
-import java.io.BufferedInputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.regex.*;
 
@@ -30,11 +30,13 @@ public class TocHw3 {
 		}
 		
 		try {//retrieve JSON data array
-			URL url = new URL(args[0]);		
-			sourceArray = new JSONArray(new JSONTokener(
-					new BufferedInputStream(url.openStream())));			
+			URL url = new URL(args[0]);
+			//due to encoding issue ,just use url.openStream() will result in error
+			//also ,JSONTokener automatically use BufferedReader inside
+			JSONTokener tok = new JSONTokener(new InputStreamReader(url.openStream(),"UTF-8"));
+			sourceArray = new JSONArray(tok);
 		}catch(Exception e){
-			System.out.println("URL/JSON open error: " + e.getMessage());
+			e.printStackTrace();
 			System.exit(0);
 		}
 		
@@ -43,6 +45,7 @@ public class TocHw3 {
 		
 		Pattern pattern = Pattern.compile(".*"+args[2]+".*");
 		for(int i=0;i<sourceArray.length();i++){
+			//for each JSONObject in array
 			JSONObject current;
 			try {
 				current = sourceArray.getJSONObject(i);
@@ -53,11 +56,10 @@ public class TocHw3 {
 					count++;
 				}
 			} catch (JSONException e) {
-				System.out.println("JSON error: " + e.getMessage());
+				e.printStackTrace();
 				System.exit(0);
 			}	
 		}
 		System.out.println(sum/count);
 	}
-
 }
